@@ -1,0 +1,15 @@
+# Composer
+/vendor/
+composer.lock
+
+# PHPUnit
+.phpunit/
+.phpunit.result.cache
+.phpunit.cache/
+
+# Coverage reports
+coverage/
+coverage-html/
+
+# Environment files
+.env
