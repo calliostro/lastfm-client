@@ -2,68 +2,188 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:
+      - 'main'
+      - 'legacy/*'      # Legacy branches: legacy/v2.x
+      - 'feature/*'     # Feature branches: feature/new-feature  
+      - 'hotfix/*'      # Hotfix branches: hotfix/urgent-fix
+      - 'release/*'     # Release branches: release/v3.0.0
   pull_request:
-    branches: [ main, develop ]
+    branches:
+      - 'main'
+      - 'legacy/*'      # PRs to legacy branches
+  workflow_dispatch:    # Allows manual triggering via GitHub UI
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
-        php-versions: ['8.1', '8.2', '8.3', '8.4']
         include:
-          - php-versions: '8.5'
-            experimental: true
+          # Core PHP version testing
+          - php: '8.1'
+            allowed-to-fail: false
+          - php: '8.2'
+            allowed-to-fail: false
+          - php: '8.3'
+            allowed-to-fail: false
+          - php: '8.4'
+            allowed-to-fail: false
 
-    name: PHP ${{ matrix.php-versions }} Test
+          # Future-ready: PHP 8.5 (alpha/dev) - when available
+          - php: '8.5'
+            stability: 'dev'
+            allowed-to-fail: true
+
+          # Development stability tests
+          - php: '8.4'
+            stability: 'dev'
+            allowed-to-fail: true
+          - php: '8.5'
+            stability: 'dev'
+            allowed-to-fail: true
+
+    name: "PHP ${{ matrix.php }}${{ matrix.stability && format(' | {0}', matrix.stability) || '' }}"
+
+    continue-on-error: ${{ matrix.allowed-to-fail }}
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php-versions }}
-        extensions: json, curl
-        coverage: xdebug
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json, mbstring, tokenizer
+          coverage: xdebug
+          tools: composer:v2
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
 
-    - name: Install dependencies
-      run: |
-        if [[ "${{ matrix.php-versions }}" == "8.5" ]]; then
-          composer install --prefer-dist --no-progress --ignore-platform-reqs
-        else
-          composer install --prefer-dist --no-progress
-        fi
+      - name: Configure stability
+        if: matrix.stability
+        run: |
+          composer config minimum-stability ${{ matrix.stability }}
+          composer config prefer-stable true
 
-    - name: Run code style check
-      run: composer cs
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
 
-    - name: Run static analysis
-      run: composer analyse
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
 
-    - name: Run test suite
-      run: composer test
-      continue-on-error: ${{ matrix.experimental == true }}
+      - name: Run code style check
+        run: composer cs
 
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage/coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: true
-        token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Run static analysis
+        run: composer analyse
+
+      - name: Run tests (Unit Tests only)
+        run: composer test
+
+      - name: Run integration tests (public API only - manual trigger)
+        if: github.event_name == 'workflow_dispatch'
+        run: vendor/bin/phpunit tests/Integration/PublicApiIntegrationTest.php --testdox
+
+      - name: Run integration tests (with authentication - manual trigger)  
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+          LASTFM_API_SECRET: ${{ secrets.LASTFM_API_SECRET }}
+          LASTFM_SESSION_KEY: ${{ secrets.LASTFM_SESSION_KEY }}
+          LASTFM_USERNAME: ${{ secrets.LASTFM_USERNAME }}
+          LASTFM_MOBILE_USERNAME: ${{ secrets.LASTFM_MOBILE_USERNAME }}
+          LASTFM_MOBILE_PASSWORD: ${{ secrets.LASTFM_MOBILE_PASSWORD }}
+        run: |
+          if [ -n "$LASTFM_API_KEY" ] && [ -n "$LASTFM_API_SECRET" ]; then
+            vendor/bin/phpunit tests/Integration/AuthenticatedIntegrationTest.php --testdox
+            vendor/bin/phpunit tests/Integration/LastFmClientFactoryIntegrationTest.php --testdox
+          else
+            echo "⚠️  Skipping authenticated integration tests - LASTFM_API_KEY and LASTFM_API_SECRET not available"
+          fi
+
+  code-quality:
+    runs-on: ubuntu-latest
+    name: Code Quality Checks
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: json, mbstring, tokenizer
+          coverage: none
+          tools: composer:v2
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+  coverage:
+    runs-on: ubuntu-latest
+    name: Code Coverage
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: json, mbstring, tokenizer
+          coverage: xdebug
+          tools: composer:v2
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run tests with coverage (Unit Tests only)
+        run: composer test-coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false

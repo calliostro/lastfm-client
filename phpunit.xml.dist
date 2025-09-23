@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         colors="true"
+         testdox="true"
+         cacheDirectory=".phpunit.cache"
+         beStrictAboutOutputDuringTests="true"
+         executionOrder="depends,defects"
+         failOnWarning="false"
+         failOnRisky="true"
+         displayDetailsOnIncompleteTests="true"
+         displayDetailsOnSkippedTests="true">
+  <testsuites>
+    <testsuite name="Unit Tests">
+      <directory>tests/Unit</directory>
+    </testsuite>
+    <testsuite name="Integration Tests">
+      <directory>tests/Integration</directory>
+    </testsuite>
+    <testsuite name="All Tests">
+      <directory>tests</directory>
+    </testsuite>
+  </testsuites>
+  <source>
+    <include>
+      <directory>src</directory>
+    </include>
+  </source>
+  <php>
+    <ini name="error_reporting" value="E_ALL"/>
+    <ini name="memory_limit" value="-1"/>
+    <!-- Last.fm API credentials for integration tests -->
+    <!-- Set these environment variables before running integration tests -->
+    <env name="LASTFM_API_KEY" value=""/>
+    <env name="LASTFM_API_SECRET" value=""/>
+    <env name="LASTFM_SESSION_KEY" value=""/>
+    <env name="LASTFM_USERNAME" value=""/>
+    <!-- Mobile Auth uses direct username/password authentication (for mobile apps) -->
+    <!-- These are your regular Last.fm login credentials -->
+    <env name="LASTFM_MOBILE_USERNAME" value=""/>
+    <env name="LASTFM_MOBILE_PASSWORD" value=""/>
+  </php>
+</phpunit>

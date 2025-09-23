@@ -1,13 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 return [
-    'baseUrl' => 'https://ws.audioscrobbler.com/2.0/',
+    'baseUrl' => 'http://ws.audioscrobbler.com/2.0/',
     'operations' => [
         // ===========================
         // ALBUM METHODS
         // ===========================
-        'album.getInfo' => [
+        'addAlbumTags' => [
+            'httpMethod' => 'POST',
+            'method' => 'album.addTags',
+            'requiresAuth' => true,
+            'parameters' => [
+                'artist' => ['required' => true],
+                'album' => ['required' => true],
+                'tags' => ['required' => true],
+            ],
+        ],
+        'getAlbumInfo' => [
             'httpMethod' => 'GET',
+            'method' => 'album.getInfo',
             'parameters' => [
                 'artist' => ['required' => false],
                 'album' => ['required' => false],
@@ -17,18 +30,21 @@ return [
                 'lang' => ['required' => false],
             ],
         ],
-        'album.getTags' => [
+        'getAlbumTags' => [
             'httpMethod' => 'GET',
+            'method' => 'album.getTags',
+            'requiresAuth' => true,
             'parameters' => [
-                'artist' => ['required' => true],
-                'album' => ['required' => true],
+                'artist' => ['required' => false],
+                'album' => ['required' => false],
                 'mbid' => ['required' => false],
                 'autocorrect' => ['required' => false],
-                'user' => ['required' => false],
+                'user' => ['required' => true],
             ],
         ],
-        'album.getTopTags' => [
+        'getAlbumTopTags' => [
             'httpMethod' => 'GET',
+            'method' => 'album.getTopTags',
             'parameters' => [
                 'artist' => ['required' => false],
                 'album' => ['required' => false],
@@ -36,255 +52,244 @@ return [
                 'autocorrect' => ['required' => false],
             ],
         ],
-        'album.search' => [
-            'httpMethod' => 'GET',
-            'parameters' => [
-                'album' => ['required' => true],
-                'limit' => ['required' => false],
-                'page' => ['required' => false],
-            ],
-        ],
-        'album.addTags' => [
+        'removeAlbumTag' => [
             'httpMethod' => 'POST',
-            'requiresAuth' => true,
-            'parameters' => [
-                'artist' => ['required' => true],
-                'album' => ['required' => true],
-                'tags' => ['required' => true],
-            ],
-        ],
-        'album.removeTag' => [
-            'httpMethod' => 'POST',
+            'method' => 'album.removeTag',
             'requiresAuth' => true,
             'parameters' => [
                 'artist' => ['required' => true],
                 'album' => ['required' => true],
                 'tag' => ['required' => true],
+            ],
+        ],
+        'searchAlbums' => [
+            'httpMethod' => 'GET',
+            'method' => 'album.search',
+            'parameters' => [
+                'album' => ['required' => true],
+                'limit' => ['required' => false],
+                'page' => ['required' => false],
             ],
         ],
 
         // ===========================
         // ARTIST METHODS
         // ===========================
-        'artist.getInfo' => [
-            'httpMethod' => 'GET',
-            'parameters' => [
-                'artist' => ['required' => false],
-                'mbid' => ['required' => false],
-                'autocorrect' => ['required' => false],
-                'username' => ['required' => false],
-                'lang' => ['required' => false],
-            ],
-        ],
-        'artist.getSimilar' => [
-            'httpMethod' => 'GET',
-            'parameters' => [
-                'artist' => ['required' => false],
-                'mbid' => ['required' => false],
-                'limit' => ['required' => false],
-                'autocorrect' => ['required' => false],
-            ],
-        ],
-        'artist.getTags' => [
-            'httpMethod' => 'GET',
-            'parameters' => [
-                'artist' => ['required' => false],
-                'mbid' => ['required' => false],
-                'autocorrect' => ['required' => false],
-                'user' => ['required' => false],
-            ],
-        ],
-        'artist.getTopAlbums' => [
-            'httpMethod' => 'GET',
-            'parameters' => [
-                'artist' => ['required' => false],
-                'mbid' => ['required' => false],
-                'limit' => ['required' => false],
-                'page' => ['required' => false],
-                'autocorrect' => ['required' => false],
-            ],
-        ],
-        'artist.getTopTags' => [
-            'httpMethod' => 'GET',
-            'parameters' => [
-                'artist' => ['required' => false],
-                'mbid' => ['required' => false],
-                'autocorrect' => ['required' => false],
-            ],
-        ],
-        'artist.getTopTracks' => [
-            'httpMethod' => 'GET',
-            'parameters' => [
-                'artist' => ['required' => false],
-                'mbid' => ['required' => false],
-                'limit' => ['required' => false],
-                'page' => ['required' => false],
-                'autocorrect' => ['required' => false],
-            ],
-        ],
-        'artist.search' => [
-            'httpMethod' => 'GET',
-            'parameters' => [
-                'artist' => ['required' => true],
-                'limit' => ['required' => false],
-                'page' => ['required' => false],
-            ],
-        ],
-        'artist.getCorrection' => [
-            'httpMethod' => 'GET',
-            'parameters' => [
-                'artist' => ['required' => true],
-            ],
-        ],
-        'artist.addTags' => [
+        'addArtistTags' => [
             'httpMethod' => 'POST',
+            'method' => 'artist.addTags',
             'requiresAuth' => true,
             'parameters' => [
                 'artist' => ['required' => true],
                 'tags' => ['required' => true],
             ],
         ],
-        'artist.removeTag' => [
+        'getArtistCorrection' => [
+            'httpMethod' => 'GET',
+            'method' => 'artist.getCorrection',
+            'parameters' => [
+                'artist' => ['required' => true],
+            ],
+        ],
+        'getArtistInfo' => [
+            'httpMethod' => 'GET',
+            'method' => 'artist.getInfo',
+            'parameters' => [
+                'artist' => ['required' => false],
+                'mbid' => ['required' => false],
+                'lang' => ['required' => false],
+                'autocorrect' => ['required' => false],
+                'username' => ['required' => false],
+            ],
+        ],
+        'getSimilarArtists' => [
+            'httpMethod' => 'GET',
+            'method' => 'artist.getSimilar',
+            'parameters' => [
+                'artist' => ['required' => false],
+                'mbid' => ['required' => false],
+                'autocorrect' => ['required' => false],
+                'limit' => ['required' => false],
+            ],
+        ],
+        'getArtistTags' => [
+            'httpMethod' => 'GET',
+            'method' => 'artist.getTags',
+            'requiresAuth' => true,
+            'parameters' => [
+                'artist' => ['required' => false],
+                'mbid' => ['required' => false],
+                'autocorrect' => ['required' => false],
+                'user' => ['required' => true],
+            ],
+        ],
+        'getArtistTopAlbums' => [
+            'httpMethod' => 'GET',
+            'method' => 'artist.getTopAlbums',
+            'parameters' => [
+                'artist' => ['required' => false],
+                'mbid' => ['required' => false],
+                'autocorrect' => ['required' => false],
+                'page' => ['required' => false],
+                'limit' => ['required' => false],
+            ],
+        ],
+        'getArtistTopTags' => [
+            'httpMethod' => 'GET',
+            'method' => 'artist.getTopTags',
+            'parameters' => [
+                'artist' => ['required' => false],
+                'mbid' => ['required' => false],
+                'autocorrect' => ['required' => false],
+            ],
+        ],
+        'getArtistTopTracks' => [
+            'httpMethod' => 'GET',
+            'method' => 'artist.getTopTracks',
+            'parameters' => [
+                'artist' => ['required' => false],
+                'mbid' => ['required' => false],
+                'autocorrect' => ['required' => false],
+                'page' => ['required' => false],
+                'limit' => ['required' => false],
+            ],
+        ],
+        'removeArtistTag' => [
             'httpMethod' => 'POST',
+            'method' => 'artist.removeTag',
             'requiresAuth' => true,
             'parameters' => [
                 'artist' => ['required' => true],
                 'tag' => ['required' => true],
             ],
         ],
-
-        // ===========================
-        // AUTH METHODS
-        // ===========================
-        'auth.getMobileSession' => [
-            'httpMethod' => 'POST',
-            'requiresSignature' => true,
-            'parameters' => [
-                'username' => ['required' => true],
-                'password' => ['required' => true],
-            ],
-        ],
-        'auth.getSession' => [
+        'searchArtists' => [
             'httpMethod' => 'GET',
-            'requiresSignature' => true,
+            'method' => 'artist.search',
             'parameters' => [
-                'token' => ['required' => true],
+                'artist' => ['required' => true],
+                'limit' => ['required' => false],
+                'page' => ['required' => false],
             ],
-        ],
-        'auth.getToken' => [
-            'httpMethod' => 'GET',
-            'requiresSignature' => true,
-            'parameters' => [],
         ],
 
         // ===========================
         // CHART METHODS
         // ===========================
-        'chart.getTopArtists' => [
+        'getTopArtistsChart' => [
             'httpMethod' => 'GET',
+            'method' => 'chart.getTopArtists',
             'parameters' => [
-                'limit' => ['required' => false],
                 'page' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
-        'chart.getTopTags' => [
+        'getTopTagsChart' => [
             'httpMethod' => 'GET',
+            'method' => 'chart.getTopTags',
             'parameters' => [
-                'limit' => ['required' => false],
                 'page' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
-        'chart.getTopTracks' => [
+        'getTopTracksChart' => [
             'httpMethod' => 'GET',
+            'method' => 'chart.getTopTracks',
             'parameters' => [
-                'limit' => ['required' => false],
                 'page' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
 
         // ===========================
         // GEO METHODS
         // ===========================
-        'geo.getTopArtists' => [
+        'getTopArtistsByCountry' => [
             'httpMethod' => 'GET',
+            'method' => 'geo.getTopArtists',
             'parameters' => [
                 'country' => ['required' => true],
-                'limit' => ['required' => false],
                 'page' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
-        'geo.getTopTracks' => [
+        'getTopTracksByCountry' => [
             'httpMethod' => 'GET',
+            'method' => 'geo.getTopTracks',
             'parameters' => [
                 'country' => ['required' => true],
-                'limit' => ['required' => false],
                 'page' => ['required' => false],
-                'location' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
 
         // ===========================
         // LIBRARY METHODS
         // ===========================
-        'library.getArtists' => [
+        'getLibraryArtists' => [
             'httpMethod' => 'GET',
+            'method' => 'library.getArtists',
             'requiresAuth' => true,
             'parameters' => [
                 'user' => ['required' => true],
-                'limit' => ['required' => false],
                 'page' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
 
         // ===========================
         // TAG METHODS
         // ===========================
-        'tag.getInfo' => [
+        'getTagInfo' => [
             'httpMethod' => 'GET',
+            'method' => 'tag.getInfo',
             'parameters' => [
                 'tag' => ['required' => true],
                 'lang' => ['required' => false],
             ],
         ],
-        'tag.getSimilar' => [
+        'getSimilarTags' => [
             'httpMethod' => 'GET',
+            'method' => 'tag.getSimilar',
             'parameters' => [
                 'tag' => ['required' => true],
             ],
         ],
-        'tag.getTopAlbums' => [
+        'getTagTopAlbums' => [
             'httpMethod' => 'GET',
+            'method' => 'tag.getTopAlbums',
             'parameters' => [
                 'tag' => ['required' => true],
-                'limit' => ['required' => false],
                 'page' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
-        'tag.getTopArtists' => [
+        'getTagTopArtists' => [
             'httpMethod' => 'GET',
+            'method' => 'tag.getTopArtists',
             'parameters' => [
                 'tag' => ['required' => true],
-                'limit' => ['required' => false],
                 'page' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
-        'tag.getTopTags' => [
+        'getTopTags' => [
             'httpMethod' => 'GET',
-            'parameters' => [
-                'limit' => ['required' => false],
-                'page' => ['required' => false],
-            ],
+            'method' => 'tag.getTopTags',
+            'parameters' => [],
         ],
-        'tag.getTopTracks' => [
+        'getTagTopTracks' => [
             'httpMethod' => 'GET',
+            'method' => 'tag.getTopTracks',
             'parameters' => [
                 'tag' => ['required' => true],
-                'limit' => ['required' => false],
                 'page' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
-        'tag.getWeeklyChartList' => [
+        'getTagWeeklyChartList' => [
             'httpMethod' => 'GET',
+            'method' => 'tag.getWeeklyChartList',
             'parameters' => [
                 'tag' => ['required' => true],
             ],
@@ -293,8 +298,9 @@ return [
         // ===========================
         // TRACK METHODS
         // ===========================
-        'track.addTags' => [
+        'addTrackTags' => [
             'httpMethod' => 'POST',
+            'method' => 'track.addTags',
             'requiresAuth' => true,
             'parameters' => [
                 'artist' => ['required' => true],
@@ -302,62 +308,70 @@ return [
                 'tags' => ['required' => true],
             ],
         ],
-        'track.getCorrection' => [
+        'getTrackCorrection' => [
             'httpMethod' => 'GET',
+            'method' => 'track.getCorrection',
             'parameters' => [
                 'artist' => ['required' => true],
                 'track' => ['required' => true],
             ],
         ],
-        'track.getInfo' => [
+        'getTrackInfo' => [
             'httpMethod' => 'GET',
+            'method' => 'track.getInfo',
             'parameters' => [
-                'track' => ['required' => false],
                 'artist' => ['required' => false],
+                'track' => ['required' => false],
                 'mbid' => ['required' => false],
                 'autocorrect' => ['required' => false],
                 'username' => ['required' => false],
             ],
         ],
-        'track.getSimilar' => [
+        'getSimilarTracks' => [
             'httpMethod' => 'GET',
+            'method' => 'track.getSimilar',
             'parameters' => [
-                'track' => ['required' => false],
                 'artist' => ['required' => false],
+                'track' => ['required' => false],
                 'mbid' => ['required' => false],
+                'autocorrect' => ['required' => false],
                 'limit' => ['required' => false],
-                'autocorrect' => ['required' => false],
             ],
         ],
-        'track.getTags' => [
+        'getTrackTags' => [
             'httpMethod' => 'GET',
-            'parameters' => [
-                'track' => ['required' => false],
-                'artist' => ['required' => false],
-                'mbid' => ['required' => false],
-                'autocorrect' => ['required' => false],
-                'user' => ['required' => false],
-            ],
-        ],
-        'track.getTopTags' => [
-            'httpMethod' => 'GET',
-            'parameters' => [
-                'track' => ['required' => false],
-                'artist' => ['required' => false],
-                'mbid' => ['required' => false],
-                'autocorrect' => ['required' => false],
-            ],
-        ],
-        'track.love' => [
-            'httpMethod' => 'POST',
+            'method' => 'track.getTags',
             'requiresAuth' => true,
             'parameters' => [
-                'track' => ['required' => true],
-                'artist' => ['required' => true],
+                'artist' => ['required' => false],
+                'track' => ['required' => false],
+                'mbid' => ['required' => false],
+                'autocorrect' => ['required' => false],
+                'user' => ['required' => true],
             ],
         ],
-        'track.removeTag' => [
+        'getTrackTopTags' => [
+            'httpMethod' => 'GET',
+            'method' => 'track.getTopTags',
+            'parameters' => [
+                'artist' => ['required' => false],
+                'track' => ['required' => false],
+                'mbid' => ['required' => false],
+                'autocorrect' => ['required' => false],
+            ],
+        ],
+        'loveTrack' => [
             'httpMethod' => 'POST',
+            'method' => 'track.love',
+            'requiresAuth' => true,
+            'parameters' => [
+                'artist' => ['required' => true],
+                'track' => ['required' => true],
+            ],
+        ],
+        'removeTrackTag' => [
+            'httpMethod' => 'POST',
+            'method' => 'track.removeTag',
             'requiresAuth' => true,
             'parameters' => [
                 'artist' => ['required' => true],
@@ -365,8 +379,9 @@ return [
                 'tag' => ['required' => true],
             ],
         ],
-        'track.scrobble' => [
+        'scrobbleTrack' => [
             'httpMethod' => 'POST',
+            'method' => 'track.scrobble',
             'requiresAuth' => true,
             'parameters' => [
                 'artist' => ['required' => true],
@@ -374,84 +389,91 @@ return [
                 'timestamp' => ['required' => true],
                 'album' => ['required' => false],
                 'albumArtist' => ['required' => false],
-                'trackNumber' => ['required' => false],
-                'mbid' => ['required' => false],
                 'duration' => ['required' => false],
                 'streamId' => ['required' => false],
                 'chosenByUser' => ['required' => false],
-                'context' => ['required' => false],
+                'trackNumber' => ['required' => false],
+                'mbid' => ['required' => false],
             ],
         ],
-        'track.search' => [
+        'searchTracks' => [
             'httpMethod' => 'GET',
+            'method' => 'track.search',
             'parameters' => [
                 'track' => ['required' => true],
                 'artist' => ['required' => false],
-                'limit' => ['required' => false],
                 'page' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
-        'track.unlove' => [
+        'unloveTrack' => [
             'httpMethod' => 'POST',
+            'method' => 'track.unlove',
             'requiresAuth' => true,
             'parameters' => [
-                'track' => ['required' => true],
                 'artist' => ['required' => true],
+                'track' => ['required' => true],
             ],
         ],
-        'track.updateNowPlaying' => [
+        'updateNowPlaying' => [
             'httpMethod' => 'POST',
+            'method' => 'track.updateNowPlaying',
             'requiresAuth' => true,
             'parameters' => [
                 'artist' => ['required' => true],
                 'track' => ['required' => true],
                 'album' => ['required' => false],
                 'albumArtist' => ['required' => false],
+                'duration' => ['required' => false],
                 'trackNumber' => ['required' => false],
                 'mbid' => ['required' => false],
-                'duration' => ['required' => false],
-                'context' => ['required' => false],
             ],
         ],
 
         // ===========================
         // USER METHODS
         // ===========================
-        'user.getFriends' => [
+        'getUserFriends' => [
             'httpMethod' => 'GET',
+            'method' => 'user.getFriends',
             'parameters' => [
                 'user' => ['required' => true],
                 'recenttracks' => ['required' => false],
-                'limit' => ['required' => false],
                 'page' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
-        'user.getInfo' => [
+        'getUserInfo' => [
             'httpMethod' => 'GET',
+            'method' => 'user.getInfo',
+            'parameters' => [
+                'user' => ['required' => false],
+            ],
+        ],
+        'getUserLovedTracks' => [
+            'httpMethod' => 'GET',
+            'method' => 'user.getLovedTracks',
             'parameters' => [
                 'user' => ['required' => true],
-            ],
-        ],
-        'user.getLovedTracks' => [
-            'httpMethod' => 'GET',
-            'parameters' => [
-                'user' => ['required' => true],
-                'limit' => ['required' => false],
                 'page' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
-        'user.getPersonalTags' => [
+        'getUserPersonalTags' => [
             'httpMethod' => 'GET',
+            'method' => 'user.getPersonalTags',
+            'requiresAuth' => true,
             'parameters' => [
                 'user' => ['required' => true],
                 'tag' => ['required' => true],
-                'taggingtype' => ['required' => true], // artist, album, track
-                'limit' => ['required' => false],
+                'taggingtype' => ['required' => true],
                 'page' => ['required' => false],
+                'limit' => ['required' => false],
             ],
         ],
-        'user.getRecentTracks' => [
+        'getUserRecentTracks' => [
             'httpMethod' => 'GET',
+            'method' => 'user.getRecentTracks',
             'parameters' => [
                 'user' => ['required' => true],
                 'limit' => ['required' => false],
@@ -461,64 +483,72 @@ return [
                 'extended' => ['required' => false],
             ],
         ],
-        'user.getTopAlbums' => [
+        'getUserTopAlbums' => [
             'httpMethod' => 'GET',
+            'method' => 'user.getTopAlbums',
             'parameters' => [
                 'user' => ['required' => true],
-                'period' => ['required' => false], // overall, 7day, 1month, 3month, 6month, 12month
+                'period' => ['required' => false],
                 'limit' => ['required' => false],
                 'page' => ['required' => false],
             ],
         ],
-        'user.getTopArtists' => [
+        'getUserTopArtists' => [
             'httpMethod' => 'GET',
+            'method' => 'user.getTopArtists',
             'parameters' => [
                 'user' => ['required' => true],
-                'period' => ['required' => false], // overall, 7day, 1month, 3month, 6month, 12month
+                'period' => ['required' => false],
                 'limit' => ['required' => false],
                 'page' => ['required' => false],
             ],
         ],
-        'user.getTopTags' => [
+        'getUserTopTags' => [
             'httpMethod' => 'GET',
+            'method' => 'user.getTopTags',
             'parameters' => [
                 'user' => ['required' => true],
                 'limit' => ['required' => false],
             ],
         ],
-        'user.getTopTracks' => [
+        'getUserTopTracks' => [
             'httpMethod' => 'GET',
+            'method' => 'user.getTopTracks',
             'parameters' => [
                 'user' => ['required' => true],
-                'period' => ['required' => false], // overall, 7day, 1month, 3month, 6month, 12month
+                'period' => ['required' => false],
                 'limit' => ['required' => false],
                 'page' => ['required' => false],
             ],
         ],
-        'user.getWeeklyAlbumChart' => [
+        'getUserWeeklyAlbumChart' => [
             'httpMethod' => 'GET',
+            'method' => 'user.getWeeklyAlbumChart',
             'parameters' => [
                 'user' => ['required' => true],
                 'from' => ['required' => false],
                 'to' => ['required' => false],
             ],
         ],
-        'user.getWeeklyArtistChart' => [
+        'getUserWeeklyArtistChart' => [
             'httpMethod' => 'GET',
+            'method' => 'user.getWeeklyArtistChart',
             'parameters' => [
                 'user' => ['required' => true],
                 'from' => ['required' => false],
                 'to' => ['required' => false],
             ],
         ],
-        'user.getWeeklyChartList' => [
+        'getUserWeeklyChartList' => [
             'httpMethod' => 'GET',
+            'method' => 'user.getWeeklyChartList',
             'parameters' => [
                 'user' => ['required' => true],
             ],
         ],
-        'user.getWeeklyTrackChart' => [
+        'getUserWeeklyTrackChart' => [
             'httpMethod' => 'GET',
+            'method' => 'user.getWeeklyTrackChart',
             'parameters' => [
                 'user' => ['required' => true],
                 'from' => ['required' => false],
@@ -529,10 +559,10 @@ return [
     'client' => [
         'class' => 'GuzzleHttp\Client',
         'options' => [
-            'base_uri' => 'https://ws.audioscrobbler.com/2.0/',
+            'base_uri' => 'http://ws.audioscrobbler.com/2.0/',
             'timeout' => 30,
             'headers' => [
-                'User-Agent' => 'LastFmClient/1.0 (+https://github.com/calliostro/lastfm-client)',
+                'User-Agent' => 'LastFmClient/2.0.0 +https://github.com/calliostro/lastfm-client',
                 'Accept' => 'application/json',
             ],
         ],
