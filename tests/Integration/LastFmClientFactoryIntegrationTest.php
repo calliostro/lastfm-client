@@ -15,7 +15,6 @@ use RuntimeException;
  * Tests real authentication workflows with AuthHelper integration
  */
 #[CoversClass(LastFmClientFactory::class)]
-#[CoversClass(AuthHelper::class)]
 final class LastFmClientFactoryIntegrationTest extends IntegrationTestCase
 {
     public function testCreateWithApiKeyReturnsWorkingClient(): void

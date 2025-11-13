@@ -12,7 +12,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * Integration tests for public Last.fm API endpoints that don't require authentication
  */
 #[CoversClass(LastFmClient::class)]
-#[CoversClass(LastFmClientFactory::class)]
 final class PublicApiIntegrationTest extends IntegrationTestCase
 {
     private LastFmClient $client;

@@ -12,7 +12,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * Integration tests for authenticated Last.fm API endpoints that require a session key
  */
 #[CoversClass(LastFmClient::class)]
-#[CoversClass(LastFmClientFactory::class)]
 final class AuthenticatedIntegrationTest extends IntegrationTestCase
 {
     private LastFmClient $client;
