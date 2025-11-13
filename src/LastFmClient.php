@@ -334,6 +334,14 @@ final class LastFmClient
 
         $operation = $this->config['operations'][$operationName];
 
+        // Check if the operation requires authentication and we don't have a session key
+        if (($operation['requiresAuth'] ?? false) && $this->sessionKey === null) {
+            throw new RuntimeException(
+                "Operation '$operationName' requires authentication. " .
+                "Please provide a session key using setApiCredentials() or use LastFmClientFactory::createWithSession()."
+            );
+        }
+
         $httpMethod = $operation['httpMethod'] ?? 'GET';
         $lastFmMethod = $operation['method'] ?? '';
 

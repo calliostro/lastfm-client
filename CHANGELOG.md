@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - HTTP response stream handling and JSON error processing
 - Authentication signature generation consistency
 - Null parameters causing Error Code 6 by properly omitting them from API requests
+- Misleading error messages for authentication-required operations now show clear authentication requirements instead of "missing required parameter"
 
 [2.0.0]: https://github.com/calliostro/lastfm-client/releases/tag/v2.0.0
 

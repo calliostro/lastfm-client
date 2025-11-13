@@ -445,6 +445,9 @@ final class LastFmClientTest extends UnitTestCase
      */
     public function testCallOperationWithPostMethod(): void
     {
+        // Set up authentication for the test
+        $this->client->setApiCredentials('test_key', 'test_secret', 'test_session');
+
         $this->mockHandler->append(
             new Response(200, [], $this->jsonEncode([
                 'lfm' => ['status' => 'ok']
@@ -509,7 +512,7 @@ final class LastFmClientTest extends UnitTestCase
 
         $this->assertEquals('Lorde', $result['artist']);
         $this->assertEquals('1', $result['autocorrect']);
-        $this->assertEquals('', $result['limit']);
+        $this->assertArrayNotHasKey('limit', $result);
     }
 
     /**
@@ -944,8 +947,8 @@ final class LastFmClientTest extends UnitTestCase
         $this->assertEquals('test', $result['string']);
         $this->assertEquals('123', $result['integer']);
         $this->assertEquals('45.67', $result['float']);
-        $this->assertEquals('1', $result['boolean']); // true converts to '1'
-        $this->assertEquals('', $result['null']); // null converts to empty string
+        $this->assertEquals('1', $result['boolean']);
+        $this->assertArrayNotHasKey('null', $result);
     }
 
     /**
