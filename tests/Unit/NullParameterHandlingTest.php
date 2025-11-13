@@ -18,6 +18,7 @@ use ReflectionClass;
 final class NullParameterHandlingTest extends TestCase
 {
     private LastFmClient $client;
+    /** @var ReflectionClass<LastFmClient> */
     private ReflectionClass $reflection;
 
     protected function setUp(): void
