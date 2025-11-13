@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2025-09-23
+## [2.0.0] - 2025-11-13
 
 ### Added
 
@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parameter validation edge cases and security vulnerabilities
 - HTTP response stream handling and JSON error processing
 - Authentication signature generation consistency
+- Null parameters causing Error Code 6 by properly omitting them from API requests
 
 [2.0.0]: https://github.com/calliostro/lastfm-client/releases/tag/v2.0.0
 

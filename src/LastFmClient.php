@@ -349,22 +349,22 @@ final class LastFmClient
             $params['api_key'] = $this->apiKey;
         }
 
+        // Convert array parameters to strings and remove nulls FIRST
+        $convertedQueryParams = $this->convertArrayParamsToString($params);
+
         // Validate parameters for security and performance
-        $this->validateParameters($params);
+        $this->validateParameters($convertedQueryParams);
 
         // Add an authentication signature if we have an API secret
         if ($this->apiSecret !== null) {
             // Add a session key if available for authenticated requests
             if ($this->sessionKey !== null) {
-                $params['sk'] = $this->sessionKey;
+                $convertedQueryParams['sk'] = $this->sessionKey;
             }
 
-            // Generate signature for authenticated requests
-            $params['api_sig'] = $this->generateSignature($params, $this->apiSecret);
+            // Generate signature for authenticated requests (after null removal)
+            $convertedQueryParams['api_sig'] = $this->generateSignature($convertedQueryParams, $this->apiSecret);
         }
-
-        // Convert array parameters to strings more efficiently
-        $convertedQueryParams = $this->convertArrayParamsToString($params);
 
         if ($httpMethod === 'POST') {
             $response = $this->client->post($uri, ['form_params' => $convertedQueryParams]);
@@ -431,6 +431,7 @@ final class LastFmClient
 
     /**
      * Convert array parameters to strings more efficiently than array_map
+     * Skip null values to avoid sending empty parameters to Last.fm API
      *
      * @param array<string, mixed> $params
      * @return array<string, string>
@@ -443,7 +444,10 @@ final class LastFmClient
 
         $converted = [];
         foreach ($params as $key => $value) {
-            $converted[$key] = $this->convertParameterToString($value);
+            // Skip null values - don't send them to Last.fm API at all
+            if ($value !== null) {
+                $converted[$key] = $this->convertParameterToString($value);
+            }
         }
 
         return $converted;
