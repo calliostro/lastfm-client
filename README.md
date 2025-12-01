@@ -1,16 +1,16 @@
-# ⚡ Last.fm Client for PHP 8.1+ – Ultra-Lightweight
+# ⚡ Last.fm API Client for PHP 8.1+ – Lightweight with Maximum Developer Comfort
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/calliostro/lastfm-client.svg)](https://packagist.org/packages/calliostro/lastfm-client)
+[![Package Version](https://img.shields.io/packagist/v/calliostro/lastfm-client.svg)](https://packagist.org/packages/calliostro/lastfm-client)
 [![Total Downloads](https://img.shields.io/packagist/dt/calliostro/lastfm-client.svg)](https://packagist.org/packages/calliostro/lastfm-client)
-[![License](https://img.shields.io/packagist/l/calliostro/lastfm-client.svg)](https://packagist.org/packages/calliostro/lastfm-client)
+[![License](https://poser.pugx.org/calliostro/lastfm-client/license)](https://packagist.org/packages/calliostro/lastfm-client)
 [![PHP Version](https://img.shields.io/badge/php-%5E8.1-blue.svg)](https://php.net)
 [![Guzzle](https://img.shields.io/badge/guzzle-%5E6.5%7C%5E7.0-orange.svg)](https://docs.guzzlephp.org/)
-[![CI](https://img.shields.io/github/actions/workflow/status/calliostro/lastfm-client/ci.yml.svg)](https://github.com/calliostro/lastfm-client/actions)
-[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/calliostro/lastfm-client)
+[![CI](https://github.com/calliostro/lastfm-client/actions/workflows/ci.yml/badge.svg)](https://github.com/calliostro/lastfm-client/actions/workflows/ci.yml)
+[![Code Coverage](https://codecov.io/gh/calliostro/lastfm-client/graph/badge.svg?token=0SV4IXE9V1)](https://codecov.io/gh/calliostro/lastfm-client)
+[![PHPStan Level](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg)](https://phpstan.org/)
+[![Code Style](https://img.shields.io/badge/code%20style-PSR12-brightgreen.svg)](https://github.com/FriendsOfPHP/PHP-CS-Fixer)
 
-> **🚀 ONLY 2 CLASSES!** The most lightweight Last.fm API client for PHP. Zero bloats, maximum performance.
-
-An **ultra-minimalist** Last.fm API client that proves you don't need 20+ classes to build a great API client. Built with modern PHP 8.1+ features, service descriptions, and powered by Guzzle.
+> **🚀 MINIMAL YET POWERFUL!** Focused, lightweight Last.fm API client — as compact as possible while maintaining modern PHP comfort and clean APIs.
 
 ## 📦 Installation
 
@@ -18,206 +18,178 @@ An **ultra-minimalist** Last.fm API client that proves you don't need 20+ classe
 composer require calliostro/lastfm-client
 ```
 
-**Important:** You need to [register your application](https://www.last.fm/api/account/create) at Last.fm to get your API key and secret. All API calls require a valid API key.
+### Do You Need to Register?
 
-**Symfony Users:** For easier integration, there's also a [Symfony Bundle](https://github.com/calliostro/last-fm-client-bundle) available (currently supports only pre-configured sessions, but sufficient if you don't need dynamic authentication or scrobbling).
+**For ALL API calls:** Registration required
+
+- [Register your application](https://www.last.fm/api/account/create) at Last.fm to get credentials
+- **API Key needed for:** ALL methods (artist info, search, charts, etc.)
+
+**For write operations:** Session authentication required
+
+- **Session Key needed for:** scrobbling, loving tracks, personal collections, tagging
 
 ## 🚀 Quick Start
 
-### Basic Usage
+**Read-only data (API key required for all methods):**
 
 ```php
-<?php
+$lastfm = LastFmClientFactory::createWithApiKey('your-api-key', 'your-secret');
 
-require __DIR__ . '/vendor/autoload.php';
-
-use Calliostro\LastFm\ClientFactory;
-
-// Basic client for read-only operations
-$lastfm = ClientFactory::create('your-api-key', 'your-secret');
-
-// Fetch track information
-$track = $lastfm->trackGetInfo([
-    'artist' => 'Coldplay',
-    'track' => 'Viva La Vida'
-]);
-
-$artist = $lastfm->artistGetInfo([
-    'artist' => 'Ed Sheeran'
-]);
-
-echo "Track: " . $track['track']['name'] . "\n";
-echo "Artist: " . $artist['artist']['name'] . "\n";
+$artist = $lastfm->getArtistInfo('Billie Eilish');          // Get artist info
+$release = $lastfm->getAlbumInfo('The Weeknd', 'Dawn FM');  // Album info  
+$charts = $lastfm->getTopArtistsChart();                    // Global charts
 ```
 
-### Scrobbling and Now Playing
+**Search with API credentials:**
 
 ```php
-// Authenticated client for write operations (scrobbling, loving tracks)
-$lastfm = ClientFactory::createWithAuth(
-    'your-api-key',
-    'your-secret',
-    'session-key'
+$lastfm = LastFmClientFactory::createWithApiKey('your-api-key', 'your-secret');
+
+// Positional parameters (traditional)
+$results = $lastfm->searchArtists('Taylor Swift', 20);
+$tracks = $lastfm->searchTracks('Anti-Hero', 'Taylor Swift');
+
+// Named parameters (PHP 8.0+, recommended for clarity)
+$results = $lastfm->searchArtists(artist: 'Taylor Swift', limit: 20);
+$tracks = $lastfm->searchTracks(track: 'Anti-Hero', artist: 'Taylor Swift');
+```
+
+**Your scrobbles (session authentication):**
+
+```php
+$lastfm = LastFmClientFactory::createWithSession('your-api-key', 'your-secret', 'your-session-key');
+
+$collection = $lastfm->getUserRecentTracks('your-username');
+$loved = $lastfm->getUserLovedTracks('your-username');
+
+// Scrobble and love tracks with named parameters
+$lastfm->scrobbleTrack(
+    artist: 'Bad Bunny',
+    track: 'Un Verano Sin Ti',
+    timestamp: time()
 );
-
-$lastfm->trackUpdateNowPlaying([
-    'artist' => 'Linkin Park',
-    'track' => 'In the End'
-]);
-
-$lastfm->trackScrobble([
-    'artist' => 'Linkin Park',
-    'track' => 'In the End',
-    'timestamp' => time()
-]);
-
-// Mark tracks as loved/unloved
-$lastfm->trackLove(['artist' => 'Linkin Park', 'track' => 'In the End']);
-$lastfm->trackUnlove(['artist' => 'Eminem', 'track' => 'Lose Yourself']);
 ```
 
-### Discovery and Charts
+**Multi-user apps (mobile auth):**
 
 ```php
-// Find similar artists and top tracks
-$similar = $lastfm->artistGetSimilar(['artist' => 'Imagine Dragons']);
-$topTracks = $lastfm->artistGetTopTracks(['artist' => 'Adele']);
+$lastfm = LastFmClientFactory::createWithMobileAuth('your-api-key', 'your-secret', 'your-username', 'your-password');
 
-// Fetch user listening history
-$recentTracks = $lastfm->userGetRecentTracks(['user' => 'username']);
-$topArtists = $lastfm->chartGetTopArtists(['limit' => 10]);
-
-// Explore music by genre/tag
-$rockTracks = $lastfm->tagGetTopTracks(['tag' => 'rock']);
+$identity = $lastfm->getUserInfo();
 ```
 
 ## ✨ Key Features
 
-- **Ultra-Lightweight** – Only 2 classes, ~130 lines of logic + service descriptions
-- **Complete API Coverage** – All 60+ Last.fm API endpoints supported
-- **Direct API Calls** – `$client->trackGetInfo()` maps to `track.getInfo`, no abstractions
-- **Type Safe + IDE Support** – Full PHP 8.1+ types, PHPStan Level 8, method autocomplete
-- **Future-Ready** – PHP 8.5 compatible (beta/dev testing)
-- **Pure Guzzle** – Modern HTTP client, no custom transport layers
+- **Simple Setup** – Works immediately with an API key, easy authentication for advanced features
+- **Complete API Coverage** – All 55+ Last.fm API endpoints supported
+- **Clean Parameter API** – Natural method calls: `getArtistInfo('Billie Eilish')` with named parameter support
+- **Lightweight Focus** – Minimal codebase with only essential dependencies
+- **Modern PHP Comfort** – Full IDE support, type safety, PHPStan Level 8 without bloat
+- **Secure Authentication** – Full session and mobile authentication support
 - **Well Tested** – 100% test coverage, PSR-12 compliant
-- **Secure Authentication** – Full OAuth and API key support
+- **Future-Ready** – PHP 8.1–8.5 compatible (beta/dev testing)
+- **Pure Guzzle** – Modern HTTP client, no custom transport layers
 
 ## 🎵 All Last.fm API Methods as Direct Calls
 
-- **Track Methods** – trackGetInfo(), trackScrobble(), trackUpdateNowPlaying(), trackLove(), trackUnlove()  
-- **Artist Methods** – artistGetInfo(), artistGetTopTracks(), artistGetSimilar(), artistSearch()  
-- **User Methods** – userGetInfo(), userGetRecentTracks(), userGetLovedTracks(), userGetTopArtists()  
-- **Chart Methods** – chartGetTopArtists(), chartGetTopTracks()  
-- **Album Methods** – albumGetInfo(), albumSearch()  
-- **Tag Methods** – tagGetInfo(), tagGetTopTracks(), tagGetTopTags()  
-- **Auth Methods** – authGetToken(), authGetSession()  
-- **Geo Methods** – geoGetTopArtists(), geoGetTopTracks()  
-- **Library Methods** – libraryGetArtists()  
+- **Album Methods** – getAlbumInfo(), searchAlbums(), getAlbumTopTags(), addAlbumTags(), removeAlbumTag(), getAlbumTags()
+- **Artist Methods** – getArtistInfo(), getArtistTopTracks(), getSimilarArtists(), searchArtists(), getArtistTopAlbums(), getArtistCorrection(), addArtistTags(), removeArtistTag(), getArtistTags(), getArtistTopTags()
+- **Track Methods** – getTrackInfo(), searchTracks(), getSimilarTracks(), scrobbleTrack(), updateNowPlaying(), loveTrack(), unloveTrack(), getTrackCorrection(), addTrackTags(), removeTrackTag(), getTrackTags(), getTrackTopTags()
+- **User Methods** – getUserInfo(), getUserRecentTracks(), getUserLovedTracks(), getUserTopArtists(), getUserTopTracks(), getUserTopAlbums(), getUserFriends(), getUserArtistTracks(), getUserPersonalTags(), getUserTopTags()
+- **Chart Methods** – getTopArtistsChart(), getTopTracksChart(), getTopTagsChart()
+- **Geography Methods** – getTopArtistsByCountry(), getTopTracksByCountry()
+- **Tag Methods** – getTagInfo(), getSimilarTags(), getTagTopArtists(), getTagTopTracks(), getTagTopAlbums(), getTopTags(), getTagWeeklyChartList()
+- **Authentication Methods** – getToken(), getSession(), getMobileSession()
+- **Library Methods** – getLibraryArtists()
+- **User Charts** – getUserWeeklyArtistChart(), getUserWeeklyAlbumChart(), getUserWeeklyTrackChart(), getUserWeeklyChartList()
 
-*All 60+ Last.fm API endpoints are supported with clean documentation — see [Last.fm API Documentation](https://www.last.fm/api) for complete method reference*
+*All Last.fm API endpoints are supported with clean documentation — see [Last.fm API Documentation](https://www.last.fm/api/) for complete method reference*
+
+> 💡 **Note:** Some endpoints require authentication (scrobbling, user libraries) or specific permissions.
 
 ## 📋 Requirements
 
-- php ^8.1
-- guzzlehttp/guzzle ^6.5 || ^7.0
+- **php** ^8.1
+- **guzzlehttp/guzzle** ^6.5 || ^7.0
 
-## 🔧 Advanced Configuration
+## ⚙️ Configuration
 
-### Option 1: Simple Configuration (Recommended)
+### Configuration
 
-For basic customizations like timeout or User-Agent, use the ClientFactory:
+**Simple (works out of the box):**
 
 ```php
-use Calliostro\LastFm\ClientFactory;
+use Calliostro\LastFm\LastFmClientFactory;
 
-$lastfm = ClientFactory::create('your-api-key', 'your-secret', [
+$lastfm = LastFmClientFactory::createWithApiKey('your-api-key', 'your-secret');
+```
+
+**Advanced (middleware, custom options, etc.):**
+
+```php
+use Calliostro\LastFm\LastFmClientFactory;
+use GuzzleHttp\{HandlerStack, Middleware};
+
+$handler = HandlerStack::create();
+$handler->push(Middleware::retry(
+    fn ($retries, $request, $response) => $retries < 3 && $response?->getStatusCode() === 429,
+    fn ($retries) => 1000 * 2 ** ($retries + 1) // Rate limit handling
+));
+
+$lastfm = LastFmClientFactory::createWithApiKey('your-api-key', 'your-secret', [
     'timeout' => 30,
+    'handler' => $handler,
     'headers' => [
         'User-Agent' => 'MyApp/1.0 (+https://myapp.com)',
     ]
 ]);
 ```
 
-### Option 2: Advanced Guzzle Configuration
-
-For advanced HTTP client features (middleware, interceptors, etc.), create your own Guzzle client:
-
-```php
-use GuzzleHttp\Client;
-use Calliostro\LastFm\LastFmApiClient;
-
-$httpClient = new Client([
-    'timeout' => 30,
-    'connect_timeout' => 10,
-    'headers' => [
-        'User-Agent' => 'MyApp/1.0 (+https://myapp.com)',
-    ]
-]);
-
-// Direct usage
-$lastfm = new LastFmApiClient('your-api-key', 'your-secret', $httpClient);
-
-// Or via ClientFactory
-$lastfm = ClientFactory::create('your-api-key', 'your-secret', $httpClient);
-```
-
-> **💡 Note:** By default, the client uses `LastFmClient/1.0 (+https://github.com/calliostro/lastfm-client)` as User-Agent. You can override this by setting custom headers as shown above.
+> 💡 **Note:** By default, the client uses `LastFmClient/2.0.0 +https://github.com/calliostro/lastfm-client` as User-Agent. You can override this by setting custom headers as shown above.
 
 ## 🔐 Authentication
 
-Last.fm supports different authentication flows:
+Get credentials at [Last.fm API Registration](https://www.last.fm/api/account/create).
 
-### Web Application Authentication (Recommended)
+### Quick Reference
 
-For web applications, use the simplified flow where Last.fm generates the token automatically:
+| What you want to do         | Method                   | What you need                |
+|-----------------------------|--------------------------|------------------------------|
+| Get artist/track/chart info | `createWithApiKey()`     | API key + secret             |
+| Search the database         | `createWithApiKey()`     | API key + secret             |
+| Scrobble tracks             | `createWithSession()`    | API key + secret + session   |
+| Access user collections     | `createWithSession()`    | API key + secret + session   |
+| Mobile app                  | `createWithMobileAuth()` | API key + secret + user/pass |
 
-> **💡 Quick reminder:** Make sure you've configured the callback URL (e.g., `https://yourapp.com/lastfm/callback`) in your Last.fm application settings, otherwise the redirect won't work!
+### Complete Session Flow Example
 
-```php
-// Step 1: Redirect the user to Last.fm
-$callbackUrl = 'https://yourapp.com/lastfm/callback';
-$authUrl = "https://www.last.fm/api/auth/?api_key=your-api-key&cb=" . urlencode($callbackUrl);
-
-// Step 2: User authorizes at Last.fm (redirect to $authUrl)
-// Step 3: Last.fm redirects back with token parameter
-
-// Step 4: In your callback, get a session key with the received token
-$token = $_GET['token']; // Token from Last.fm callback
-$session = $lastfm->authGetSession(['token' => $token]);
-$sessionKey = $session['session']['key'];
-
-// Step 5: Use an authenticated client
-$authenticatedClient = ClientFactory::createWithAuth('your-api-key', 'your-secret', $sessionKey);
-```
-
-### Desktop Application Authentication
-
-For desktop/mobile applications, you may need to generate a token first:
-
-```php
-// Step 1: Get a token (for desktop apps)
-$token = $lastfm->authGetToken();
-$authUrl = "https://www.last.fm/api/auth/?api_key=your-api-key&token=" . $token['token'];
-
-// Step 2: User authorizes at $authUrl
-// Step 3: Get a session key
-$session = $lastfm->authGetSession(['token' => $token['token']]);
-$sessionKey = $session['session']['key'];
-```
-
-### Complete Web Application Example
+**Step 1: authorize.php** – Redirect user to Last.fm
 
 ```php
 <?php
 // authorize.php
 
+use Calliostro\LastFm\AuthHelper;
+
 $apiKey = 'your-api-key';
+$secret = 'your-secret';
 $callbackUrl = 'https://yourapp.com/callback.php';
+
+$auth = new AuthHelper($apiKey, $secret);
+
+// For web apps, you can skip token generation and redirect directly:
 $authUrl = "https://www.last.fm/api/auth/?api_key={$apiKey}&cb=" . urlencode($callbackUrl);
+
+// For desktop apps, generate token first:
+// $tokenData = $auth->getToken();
+// $authUrl = $auth->getAuthorizationUrl($tokenData['token']);
 
 header("Location: {$authUrl}");
 exit;
 ```
+
+**Step 2: callback.php** – Handle Last.fm callback
 
 ```php
 <?php
@@ -225,96 +197,41 @@ exit;
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Calliostro\LastFm\ClientFactory;
+use Calliostro\LastFm\{AuthHelper, LastFmClientFactory};
 
 $apiKey = 'your-api-key';
 $secret = 'your-secret';
 $token = $_GET['token'];
 
-$lastfm = ClientFactory::create($apiKey, $secret);
-$session = $lastfm->authGetSession(['token' => $token]);
-$sessionKey = $session['session']['key'];
-$username = $session['session']['name'];
+$auth = new AuthHelper($apiKey, $secret);
+$sessionData = $auth->getSession($token);
 
-// Store $sessionKey and $username for future use (database, session, cache, etc.)
+$sessionKey = $sessionData['session']['key'];
+$username = $sessionData['session']['name'];
 
-$lastfm = ClientFactory::createWithAuth($apiKey, $secret, $sessionKey);
-$lastfm->trackScrobble([
-    'artist' => 'Adele',
-    'track' => 'Rolling in the Deep', 
-    'timestamp' => time()
-]);
+// Store tokens for future use
+$_SESSION['lastfm_session_key'] = $sessionKey;
+$_SESSION['lastfm_username'] = $username;
+
+$lastfm = LastFmClientFactory::createWithSession($apiKey, $secret, $sessionKey);
+$user = $lastfm->getUserInfo();
+echo "Hello " . $user['user']['name'];
 ```
-
-## 🧪 Testing
-
-Run the test suite:
-
-```bash
-composer test
-```
-
-Run static analysis:
-
-```bash
-composer analyse
-```
-
-Check code style:
-
-```bash
-composer cs
-```
-
-## 📖 API Documentation Reference
-
-For complete API documentation including all available parameters, visit the [Last.fm API Documentation](https://www.last.fm/api).
-
-### Popular Methods
-
-#### Track Methods
-
-- `trackGetInfo($params)` – Get track information
-- `trackSearch($params)` – Search for tracks
-- `trackScrobble($params)` – Scrobble a track (auth required)
-- `trackUpdateNowPlaying($params)` – Update now playing (auth required)
-- `trackLove($params)` – Love a track (auth required)
-- `trackUnlove($params)` – Remove love from track (auth required)
-
-#### Artist Methods
-
-- `artistGetInfo($params)` – Get artist information
-- `artistGetTopTracks($params)` – Get artist's top tracks
-- `artistGetSimilar($params)` – Get similar artists
-- `artistSearch($params)` – Search for artists
-
-#### User Methods
-
-- `userGetInfo($params)` – Get user profile information
-- `userGetRecentTracks($params)` – Get user's recent tracks
-- `userGetLovedTracks($params)` – Get user's loved tracks
-- `userGetTopArtists($params)` – Get user's top artists
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-Please ensure your code follows PSR-12 standards and includes tests.
+Contributions are welcome! See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed setup instructions, testing guide, and development workflow.
 
 ## 📄 License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+MIT License – see [LICENSE](LICENSE) file.
 
 ## 🙏 Acknowledgments
 
-- [Last.fm](https://last.fm) for providing the excellent music data API
+- [Last.fm](https://www.last.fm/) for providing the excellent music data and scrobbling API
 - [Guzzle](https://docs.guzzlephp.org/) for the robust HTTP client
 - The PHP community for continuous inspiration
 
 ---
 
-> **⭐ Star this repo** if you find it useful! It helps others discover this lightweight solution.
+> ⭐ **Star this repo if you find it useful!**
