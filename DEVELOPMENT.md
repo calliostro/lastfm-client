@@ -90,17 +90,11 @@ export LASTFM_API_KEY="your-api-key"
 export LASTFM_SECRET="your-api-secret" 
 export LASTFM_SESSION_KEY="your-session-key"
 
-# Run public tests only
-composer test-public
+# Run integration tests (public tests run without credentials, auth tests skip if no credentials)
+composer test-integration
 
-# Run authentication tests (requires env vars)
-composer test-auth
-
-# Run all integration tests (will skip auth tests without credentials)
+# Run all tests (unit + integration) with detailed output
 composer test-all -- --testdox
-
-# Run specific integration tests with auth
-composer test-factory
 ```
 
 ### Safety Notes

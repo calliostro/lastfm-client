@@ -18,6 +18,10 @@ abstract class IntegrationTestCase extends TestCase
     {
         parent::setUp();
 
+        // Add delay between tests to respect API rate limits
+        // Last.fm API typically allows 5 requests per second per IP
+        sleep(5);
+
         // Ensure required environment variables are available for tests
         if (!$this->hasRequiredCredentials()) {
             $this->markTestSkipped('Last.fm API credentials not available. Set LASTFM_API_KEY, LASTFM_SECRET, and LASTFM_SESSION_KEY environment variables.');

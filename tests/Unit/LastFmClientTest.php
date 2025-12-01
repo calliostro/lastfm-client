@@ -1383,6 +1383,7 @@ final class LastFmClientTest extends UnitTestCase
 
         // Call with a single associative array containing an array value
         // This triggers convertAssociativeArrayParams with is_array($value) === true
+        // @phpstan-ignore-next-line
         $response = $this->client->addAlbumTags([
             'artist' => 'Test Artist',
             'album' => 'Test Album',

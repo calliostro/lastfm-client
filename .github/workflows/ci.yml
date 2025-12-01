@@ -90,23 +90,15 @@ jobs:
       - name: Run tests (Unit Tests only)
         run: composer test
 
-      - name: Run integration tests (public API only - manual trigger)
-        if: github.event_name == 'workflow_dispatch'
-        run: vendor/bin/phpunit tests/Integration/PublicApiIntegrationTest.php --testdox
-
-      - name: Run integration tests (with authentication - manual trigger)  
+      - name: Run integration tests (manual trigger)
         if: github.event_name == 'workflow_dispatch'
         env:
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
           LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
           LASTFM_SESSION_KEY: ${{ secrets.LASTFM_SESSION_KEY }}
         run: |
-          if [ -n "$LASTFM_API_KEY" ] && [ -n "$LASTFM_SECRET" ]; then
-            vendor/bin/phpunit tests/Integration/AuthenticatedIntegrationTest.php --testdox
-            vendor/bin/phpunit tests/Integration/LastFmClientFactoryIntegrationTest.php --testdox
-          else
-            echo "Skipping authenticated integration tests - LASTFM_API_KEY and LASTFM_SECRET not available"
-          fi
+          # Public tests run without credentials, auth tests skip if credentials missing
+          composer test-integration -- --testdox
 
   code-quality:
     runs-on: ubuntu-latest
