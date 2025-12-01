@@ -21,11 +21,11 @@ final class LastFmClientFactoryTest extends UnitTestCase
         $client2 = LastFmClientFactory::createWithSession('test-api-key', 'test-secret', 'test-session-key');
         $this->assertInstanceOf(LastFmClient::class, $client2);
 
-        $guzzleClient = new \GuzzleHttp\Client();
-        $client3 = LastFmClientFactory::createWithApiKey('test-api-key', 'test-secret', $guzzleClient);
+        // Test with custom options
+        $client3 = LastFmClientFactory::createWithApiKey('test-api-key', 'test-secret', ['timeout' => 30]);
         $this->assertInstanceOf(LastFmClient::class, $client3);
 
-        $client4 = LastFmClientFactory::createWithSession('test-api-key', 'test-secret', 'test-session', $guzzleClient);
+        $client4 = LastFmClientFactory::createWithSession('test-api-key', 'test-secret', 'test-session', ['timeout' => 30]);
         $this->assertInstanceOf(LastFmClient::class, $client4);
 
         // Test createWithMobileAuth success path
@@ -34,8 +34,8 @@ final class LastFmClientFactoryTest extends UnitTestCase
         $client5 = LastFmClientFactory::createWithMobileAuth('test-api-key', 'test-secret', 'test-user', 'test-pass', [], $mockAuthHelper);
         $this->assertInstanceOf(LastFmClient::class, $client5);
 
-        // Test createWithMobileAuth with GuzzleClient
-        $client6 = LastFmClientFactory::createWithMobileAuth('test-api-key', 'test-secret', 'test-user', 'test-pass', $guzzleClient, $mockAuthHelper);
+        // Test createWithMobileAuth with options
+        $client6 = LastFmClientFactory::createWithMobileAuth('test-api-key', 'test-secret', 'test-user', 'test-pass', ['timeout' => 30], $mockAuthHelper);
         $this->assertInstanceOf(LastFmClient::class, $client6);
     }
 

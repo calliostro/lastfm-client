@@ -99,15 +99,15 @@ abstract class IntegrationTestCase extends TestCase
      */
     protected function createCustomClient(array $options = []): LastFmClient
     {
-        $guzzleClient = new Client(array_merge([
+        $clientOptions = array_merge([
             'timeout' => 30,
             'connect_timeout' => 10,
-        ], $options));
+        ], $options);
 
         return LastFmClientFactory::createWithApiKey(
             $this->getApiKey(),
             $this->getApiSecret(),
-            $guzzleClient
+            $clientOptions
         );
     }
 
