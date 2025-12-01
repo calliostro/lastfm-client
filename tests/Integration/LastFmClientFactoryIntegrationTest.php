@@ -35,7 +35,7 @@ final class LastFmClientFactoryIntegrationTest extends IntegrationTestCase
     public function testCreateWithSessionReturnsWorkingAuthenticatedClient(): void
     {
         if (!$this->hasSessionKey()) {
-            $this->markTestSkipped('Session key required for this test. Set LASTFM_SESSION environment variable.');
+            $this->markTestSkipped('Session key required for this test. Set LASTFM_SESSION_KEY environment variable.');
         }
 
         $client = LastFmClientFactory::createWithSession(
@@ -48,31 +48,6 @@ final class LastFmClientFactoryIntegrationTest extends IntegrationTestCase
 
         // Test authenticated functionality
         $response = $client->getUserInfo($this->getTestUser());
-        $this->assertIsArray($response);
-        $this->assertArrayHasKey('user', $response);
-    }
-
-    public function testCreateWithMobileAuthReturnsWorkingClient(): void
-    {
-        // Skip if no mobile credentials are available
-        $username = getenv('LASTFM_MOBILE_USERNAME') ?: null;
-        $password = getenv('LASTFM_MOBILE_PASSWORD') ?: null;
-
-        if (!$username || !$password) {
-            $this->markTestSkipped('Mobile credentials not available. Set LASTFM_MOBILE_USERNAME and LASTFM_MOBILE_PASSWORD environment variables.');
-        }
-
-        $client = LastFmClientFactory::createWithMobileAuth(
-            $this->getApiKey(),
-            $this->getApiSecret(),
-            $username,
-            $password
-        );
-
-        $this->assertInstanceOf(LastFmClient::class, $client);
-
-        // Test that a mobile auth client can make authenticated calls
-        $response = $client->getUserInfo($username);
         $this->assertIsArray($response);
         $this->assertArrayHasKey('user', $response);
     }

@@ -1368,4 +1368,28 @@ final class LastFmClientTest extends UnitTestCase
         // @phpstan-ignore-next-line
         $this->client->getArtistInfo($invalidObject);
     }
+
+    /**
+     * Test convertAssociativeArrayParams with array values (e.g., tags)
+     * This tests the code path where array values are converted to comma-separated strings
+     */
+    public function testConvertAssociativeArrayParamsWithArrayValues(): void
+    {
+        $this->mockHandler->append(new Response(200, [], $this->jsonEncode([
+            'status' => 'ok'
+        ])));
+
+        $this->client->setApiCredentials('test_key', 'test_secret', 'test_session');
+
+        // Call with a single associative array containing an array value
+        // This triggers convertAssociativeArrayParams with is_array($value) === true
+        $response = $this->client->addAlbumTags([
+            'artist' => 'Test Artist',
+            'album' => 'Test Album',
+            'tags' => ['rock', 'alternative', 'indie']  // Array value to test line 566
+        ]);
+
+        $this->assertIsArray($response);
+        $this->assertArrayHasKey('status', $response);
+    }
 }

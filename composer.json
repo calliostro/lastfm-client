@@ -59,11 +59,13 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit --testsuite=\"Unit Tests\"",
-        "test-unit": "vendor/bin/phpunit --testsuite=\"Unit Tests\"",
         "test-integration": "vendor/bin/phpunit --testsuite=\"Integration Tests\"",
         "test-all": "vendor/bin/phpunit --testsuite=\"All Tests\"",
         "test-coverage": "vendor/bin/phpunit --testsuite=\"Unit Tests\" --coverage-html coverage --coverage-clover coverage.xml",
-        "-i": "vendor/bin/phpunit --testsuite=\"All Tests\" --coverage-html coverage --coverage-clover coverage.xml",
+        "test-coverage-all": "vendor/bin/phpunit --testsuite=\"All Tests\" --coverage-html coverage --coverage-clover coverage.xml",
+        "test-public": "vendor/bin/phpunit tests/Integration/PublicApiIntegrationTest.php --testdox",
+        "test-auth": "vendor/bin/phpunit tests/Integration/AuthenticatedIntegrationTest.php --testdox",
+        "test-factory": "vendor/bin/phpunit tests/Integration/LastFmClientFactoryIntegrationTest.php --testdox",
         "cs": "vendor/bin/php-cs-fixer fix --dry-run --diff --verbose",
         "cs-fix": "vendor/bin/php-cs-fixer fix --verbose",
         "analyse": "phpstan analyse src/ tests/ --level=8"

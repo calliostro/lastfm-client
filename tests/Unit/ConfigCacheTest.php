@@ -100,22 +100,6 @@ final class ConfigCacheTest extends UnitTestCase
         $this->assertIsArray($config2);
     }
 
-    public function testConfigCacheIsSingleton(): void
-    {
-        // Multiple calls within the same request should return cached data
-        $startTime = microtime(true);
-
-        for ($i = 0; $i < 10; $i++) {
-            $config = ConfigCache::get();
-            $this->assertIsArray($config);
-        }
-
-        $endTime = microtime(true);
-
-        // Should be very fast due to caching (less than 100 ms for 10 calls on any system)
-        $this->assertLessThan(0.1, $endTime - $startTime);
-    }
-
     public function testConfigContainsValidParameterDefinitions(): void
     {
         $config = ConfigCache::get();

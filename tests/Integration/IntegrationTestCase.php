@@ -20,7 +20,7 @@ abstract class IntegrationTestCase extends TestCase
 
         // Ensure required environment variables are available for tests
         if (!$this->hasRequiredCredentials()) {
-            $this->markTestSkipped('Last.fm API credentials not available. Set LASTFM_API_KEY, LASTFM_SECRET, and LASTFM_SESSION environment variables.');
+            $this->markTestSkipped('Last.fm API credentials not available. Set LASTFM_API_KEY, LASTFM_SECRET, and LASTFM_SESSION_KEY environment variables.');
         }
     }
 
@@ -37,7 +37,7 @@ abstract class IntegrationTestCase extends TestCase
      */
     protected function hasSessionKey(): bool
     {
-        return !empty(getenv('LASTFM_SESSION'));
+        return !empty(getenv('LASTFM_SESSION_KEY'));
     }
 
     /**
@@ -61,7 +61,7 @@ abstract class IntegrationTestCase extends TestCase
      */
     protected function getSessionKey(): string
     {
-        return getenv('LASTFM_SESSION') ?: '';
+        return getenv('LASTFM_SESSION_KEY') ?: '';
     }
 
     /**
@@ -78,7 +78,7 @@ abstract class IntegrationTestCase extends TestCase
     protected function createAuthenticatedClient(): LastFmClient
     {
         if (!$this->hasSessionKey()) {
-            $this->markTestSkipped('Session key not available for authenticated tests. Set LASTFM_SESSION environment variable.');
+            $this->markTestSkipped('Session key not available for authenticated tests. Set LASTFM_SESSION_KEY environment variable.');
         }
 
         return LastFmClientFactory::createWithSession(
@@ -113,7 +113,7 @@ abstract class IntegrationTestCase extends TestCase
     protected function skipIfNoSession(): void
     {
         if (!$this->hasSessionKey()) {
-            $this->markTestSkipped('Session key required for this test. Set LASTFM_SESSION environment variable.');
+            $this->markTestSkipped('Session key required for this test. Set LASTFM_SESSION_KEY environment variable.');
         }
     }
 

@@ -16,8 +16,11 @@ composer test-integration
 # All tests together (unit + integration)
 composer test-all
 
-# Code coverage (HTML + XML reports)
+# Code coverage (Unit Tests only - 100% target)
 composer test-coverage
+
+# Code coverage (All tests - requires credentials)
+composer test-coverage-all
 ```
 
 ### Static Analysis & Code Quality
@@ -44,13 +47,8 @@ Integration tests are **separated from the CI pipeline** to prevent:
 
 ### Test Strategy
 
-- **Unit Tests**: Fast, reliable, no external dependencies → **CI default**
-- **Integration Tests**: Real API calls, rate-limited → **Manual execution**
-- **Total Coverage**: 100% lines, 100% methods covered
-
-**Skipped Tests**: Two integration tests skip automatically when mobile auth credentials are missing:
-
-- `testCreateWithMobileAuthReturnsWorkingClient` (requires `LASTFM_MOBILE_USERNAME` + `LASTFM_MOBILE_PASSWORD`)
+- **Unit Tests**: Fast, reliable, no external dependencies → **CI default** → **100% coverage**
+- **Integration Tests**: Real API calls, rate-limited → **Manual execution** → **Full coverage with credentials**
 
 ### GitHub Secrets Required
 
@@ -58,63 +56,51 @@ To enable authenticated integration tests in CI/CD, add these secrets to your Gi
 
 #### Repository Settings → Secrets and variables → Actions
 
-| Secret Name              | Description                 | Where to get it                                               |
-|--------------------------|-----------------------------|---------------------------------------------------------------|
-| `LASTFM_API_KEY`         | Your Last.fm API key        | [Last.fm API Account](https://www.last.fm/api/account/create) |
-| `LASTFM_API_SECRET`      | Your Last.fm API secret     | [Last.fm API Account](https://www.last.fm/api/account/create) |
-| `LASTFM_SESSION_KEY`     | User session key (optional) | Authentication flow result                                    |
-| `LASTFM_USERNAME`        | Test username (optional)    | Your Last.fm username                                         |
-| `LASTFM_MOBILE_USERNAME` | Mobile auth username        | Your **regular** Last.fm username (not API key!)              |
-| `LASTFM_MOBILE_PASSWORD` | Mobile auth password        | Your **regular** Last.fm password (not API secret!)           |
-
-> **Mobile Auth Explanation**: Last.fm has two authentication methods:
->
-> - **Web Auth**: 3-step process (getToken → user authorizes → getSession)  
-> - **Mobile Auth**: 1-step process (direct username/password → session)
->
-> Mobile auth uses your **normal Last.fm account credentials**, not API credentials!
+| Secret Name          | Description                 | Where to get it                                               |
+|----------------------|-----------------------------|---------------------------------------------------------------|
+| `LASTFM_API_KEY`     | Your Last.fm API key        | [Last.fm API Account](https://www.last.fm/api/account/create) |
+| `LASTFM_SECRET`      | Your Last.fm API secret     | [Last.fm API Account](https://www.last.fm/api/account/create) |
+| `LASTFM_SESSION_KEY` | User session key (optional) | Authentication flow result                                    |
 
 ### Test Levels
 
 #### 1. Public API Tests (Always Run)
 
 - File: `tests/Integration/PublicApiIntegrationTest.php`
-- No credentials required
+- No credentials required (runs without API keys)
 - Tests public endpoints: artists, albums, tracks, charts
 - Safe for forks and pull requests
 
 #### 2. Authentication Levels Test (Conditional)
 
-- File: `tests/Integration/AuthenticationLevelsTest.php`
+- File: `tests/Integration/AuthenticatedIntegrationTest.php`
 - Requires API key and secret
 - Tests authentication levels:
   - Level 1: No auth (public data)
   - Level 2: API key (basic authenticated calls)
   - Level 3: Session key (user-specific data)
   - Level 4: Write operations (scrobbling, when session is available)
+  - Library methods (user library access)
 
 ### Local Development
 
 ```bash
 # Set environment variables
 export LASTFM_API_KEY="your-api-key"
-export LASTFM_API_SECRET="your-api-secret" 
+export LASTFM_SECRET="your-api-secret" 
 export LASTFM_SESSION_KEY="your-session-key"
-export LASTFM_USERNAME="your-username"
-export LASTFM_MOBILE_USERNAME="your-username"
-export LASTFM_MOBILE_PASSWORD="your-password"
 
 # Run public tests only
-vendor/bin/phpunit tests/Integration/PublicApiIntegrationTest.php
+composer test-public
 
 # Run authentication tests (requires env vars)
-vendor/bin/phpunit tests/Integration/AuthenticationLevelsTest.php
+composer test-auth
 
-# Run all integration tests (will skip mobile auth tests without credentials)
-vendor/bin/phpunit tests/Integration/ --testdox
+# Run all integration tests (will skip auth tests without credentials)
+composer test-all -- --testdox
 
-# Run specific integration tests with mobile auth
-vendor/bin/phpunit tests/Integration/LastFmClientFactoryIntegrationTest.php --testdox
+# Run specific integration tests with auth
+composer test-factory
 ```
 
 ### Safety Notes
@@ -140,7 +126,7 @@ vendor/bin/phpunit tests/Integration/LastFmClientFactoryIntegrationTest.php --te
 - **PHP Version**: ^8.1
 - **Code Style**: PSR-12 (enforced by PHP-CS-Fixer)
 - **Static Analysis**: PHPStan Level 8
-- **Test Coverage**: 100% lines, methods, and classes
+- **Test Coverage**: 100% lines, methods, and classes (Unit Tests)
 - **Dependencies**: Minimal (only Guzzle required)
 
 ## 🔍 Architecture

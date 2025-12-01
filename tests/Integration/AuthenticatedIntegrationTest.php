@@ -394,4 +394,13 @@ final class AuthenticatedIntegrationTest extends IntegrationTestCase
             usleep(100000); // 0.1 seconds
         }
     }
+
+    public function testLibraryGetArtists(): void
+    {
+        $response = $this->client->getLibraryArtists($this->getTestUser(), limit: 10);
+
+        $this->assertLastFmResponseStructure($response, 'artists');
+        $this->assertArrayHasKey('artist', $response['artists']);
+        $this->assertIsArray($response['artists']['artist']);
+    }
 }

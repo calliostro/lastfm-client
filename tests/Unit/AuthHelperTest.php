@@ -534,4 +534,24 @@ final class AuthHelperTest extends UnitTestCase
 
         $this->authHelper->getMobileSession('user', 'password');
     }
+
+    public function testGetMobileSessionMissingSessionKeyInResponse(): void
+    {
+        // Test the "Session key not found in response" error path
+        // Session exists but key is empty/missing
+        $this->mockHandler->append(
+            new Response(200, [], $this->jsonEncode([
+                'session' => [
+                    'name' => 'test_user',
+                    'subscriber' => 0
+                    // 'key' is intentionally missing
+                ]
+            ]))
+        );
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Session key not found in response');
+
+        $this->authHelper->getMobileSession('user', 'password');
+    }
 }
