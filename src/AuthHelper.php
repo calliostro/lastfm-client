@@ -64,14 +64,14 @@ final class AuthHelper
     }
 
     /**
-     * Generate authorization URL for user consent
+     * Get the authorization URL for web authentication
      *
      * @param string $token The token obtained from getToken()
      * @return string Authorization URL
      */
     public function getAuthorizationUrl(string $token): string
     {
-        return "http://www.last.fm/api/auth/?api_key={$this->apiKey}&token={$token}";
+        return "https://www.last.fm/api/auth/?api_key={$this->apiKey}&token={$token}";
     }
 
     /**

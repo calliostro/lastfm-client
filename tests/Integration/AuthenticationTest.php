@@ -46,7 +46,7 @@ final class AuthenticationTest extends IntegrationTestCase
         $url = $this->authHelper->getAuthorizationUrl($token);
 
         $this->assertIsString($url);
-        $this->assertStringStartsWith('http://www.last.fm/api/auth/', $url);
+        $this->assertStringStartsWith('https://www.last.fm/api/auth/', $url);
         $this->assertStringContainsString('api_key=' . $this->getApiKey(), $url);
         $this->assertStringContainsString('token=' . $token, $url);
 

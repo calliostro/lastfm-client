@@ -85,7 +85,7 @@ final class AuthHelperTest extends UnitTestCase
     {
         $token = 'abc123def456';
         $apiKey = $_ENV['LASTFM_API_KEY'] ?? 'test_api_key';
-        $expectedUrl = 'http://www.last.fm/api/auth/?api_key=' . $apiKey . '&token=' . $token;
+        $expectedUrl = 'https://www.last.fm/api/auth/?api_key=' . $apiKey . '&token=' . $token;
 
         $url = $this->authHelper->getAuthorizationUrl($token);
 
