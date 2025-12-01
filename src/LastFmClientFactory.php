@@ -90,7 +90,8 @@ final class LastFmClientFactory
         $authHelper = $authHelper ?? new AuthHelper($apiKey, $apiSecret);
         $sessionData = $authHelper->getMobileSession($username, $password);
 
-        // Create an authenticated client using a session key
+        // No additional validation needed: AuthHelper::getMobileSession() already validates
+        // the session key exists and throws RuntimeException if missing
         return self::createWithSession(
             $apiKey,
             $apiSecret,
