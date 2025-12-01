@@ -50,7 +50,7 @@ final class LastFmClientFactoryTest extends UnitTestCase
         $handlerStack = \GuzzleHttp\HandlerStack::create($mockHandler);
         $guzzleClient = new \GuzzleHttp\Client([
             'handler' => $handlerStack,
-            'base_uri' => 'http://ws.audioscrobbler.com/2.0/'
+            'base_uri' => 'https://ws.audioscrobbler.com/2.0/'
         ]);
         $mockAuthHelper = new \Calliostro\LastFm\AuthHelper('test-api-key', 'test-secret', $guzzleClient);
 
@@ -81,7 +81,7 @@ final class LastFmClientFactoryTest extends UnitTestCase
         $handlerStack = \GuzzleHttp\HandlerStack::create($mockHandler);
         $guzzleClient = new \GuzzleHttp\Client([
             'handler' => $handlerStack,
-            'base_uri' => 'http://ws.audioscrobbler.com/2.0/'
+            'base_uri' => 'https://ws.audioscrobbler.com/2.0/'
         ]);
 
         return new \Calliostro\LastFm\AuthHelper('test-api-key', 'test-secret', $guzzleClient);

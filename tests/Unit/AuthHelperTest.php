@@ -26,7 +26,7 @@ final class AuthHelperTest extends UnitTestCase
         $handlerStack = HandlerStack::create($this->mockHandler);
         $guzzleClient = new Client([
             'handler' => $handlerStack,
-            'base_uri' => 'http://ws.audioscrobbler.com/2.0/'
+            'base_uri' => 'https://ws.audioscrobbler.com/2.0/'
         ]);
 
         // Use environment variables if available, otherwise fall back to test values

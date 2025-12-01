@@ -39,7 +39,7 @@ final class ConfigCacheTest extends UnitTestCase
     {
         $config = ConfigCache::get();
 
-        $this->assertEquals('http://ws.audioscrobbler.com/2.0/', $config['baseUrl']);
+        $this->assertEquals('https://ws.audioscrobbler.com/2.0/', $config['baseUrl']);
     }
 
     public function testConfigContainsExpectedOperations(): void

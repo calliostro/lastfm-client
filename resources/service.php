@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 return [
-    'baseUrl' => 'http://ws.audioscrobbler.com/2.0/',
+    'baseUrl' => 'https://ws.audioscrobbler.com/2.0/',
     'operations' => [
         // ===========================
         // ALBUM METHODS
@@ -559,7 +559,7 @@ return [
     'client' => [
         'class' => 'GuzzleHttp\Client',
         'options' => [
-            'base_uri' => 'http://ws.audioscrobbler.com/2.0/',
+            'base_uri' => 'https://ws.audioscrobbler.com/2.0/',
             'timeout' => 30,
             'headers' => [
                 'User-Agent' => 'LastFmClient/2.0.0 +https://github.com/calliostro/lastfm-client',
