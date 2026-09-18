@@ -41,6 +41,14 @@ final class LastFmClientFactoryTest extends UnitTestCase
         $this->assertInstanceOf(LastFmClient::class, $client);
     }
 
+    public function testCreateWithPreConfiguredHandlerStack(): void
+    {
+        $stack = HandlerStack::create();
+        $client = LastFmClientFactory::create(['handler' => $stack]);
+
+        $this->assertInstanceOf(LastFmClient::class, $client);
+    }
+
     public function testFactoryMethods(): void
     {
         $client1 = LastFmClientFactory::createWithApiKey('test-api-key', 'test-secret');
