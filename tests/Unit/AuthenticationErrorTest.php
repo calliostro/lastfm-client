@@ -90,12 +90,12 @@ final class AuthenticationErrorTest extends TestCase
 
     public function testPublicMethodsDoNotRequireAuthentication(): void
     {
-        // This should not throw an authentication error (though it may fail for other reasons)
-        try {
-            $this->client->getArtistInfo('Dua Lipa');
-        } catch (RuntimeException $e) {
-            // Make sure it's not the authentication error
-            $this->assertStringNotContainsString('requires authentication', $e->getMessage());
-        }
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response(200, [], json_encode(['artist' => ['name' => 'Dua Lipa']]) ?: ''),
+        ]);
+        $client = LastFmClientFactory::createWithApiKey('test_key', 'test_secret', ['handler' => $mock]);
+
+        $result = $client->getArtistInfo('Dua Lipa');
+        $this->assertArrayHasKey('artist', $result);
     }
 }

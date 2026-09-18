@@ -24,10 +24,7 @@ final class LastFmClientParameterValidationTest extends UnitTestCase
 
         $reflection = new ReflectionClass($this->client);
         $this->validateParametersMethod = $reflection->getMethod('validateParameters');
-        $this->validateParametersMethod->setAccessible(true);
-
         $this->convertParameterMethod = $reflection->getMethod('convertParameterToString');
-        $this->convertParameterMethod->setAccessible(true);
     }
 
     #[Test]

@@ -177,6 +177,7 @@ final class LastFmClient
         }
 
         $parameterNames = array_keys($this->config['operations'][$operationName]['parameters']);
+        /** @var array<string, mixed> $params */
         $params = [];
         $allowedCamelParams = $this->getAllowedCamelCaseParams($operationName);
         $maxParams = count($parameterNames);
@@ -196,7 +197,8 @@ final class LastFmClient
             } else {
                 // Positional parameter
                 if ($key < $maxParams && isset($parameterNames[$key])) {
-                    $params[$parameterNames[$key]] = $value;
+                    $paramName = (string) $parameterNames[$key];
+                    $params[$paramName] = $value;
                 }
             }
         }
