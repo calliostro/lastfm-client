@@ -562,7 +562,7 @@ return [
             'base_uri' => 'https://ws.audioscrobbler.com/2.0/',
             'timeout' => 30,
             'headers' => [
-                'User-Agent' => 'LastFmClient/2.0.0 +https://github.com/calliostro/lastfm-client',
+                'User-Agent' => 'LastFmClient/2.1.0 +https://github.com/calliostro/lastfm-client',
                 'Accept' => 'application/json',
             ],
         ],

@@ -32,7 +32,6 @@ final class NullParameterHandlingTest extends TestCase
     {
         // Access the private method that converts parameters
         $convertMethod = $this->reflection->getMethod('convertArrayParamsToString');
-        $convertMethod->setAccessible(true);
 
         // Test parameters with null values (the original problem case)
         $params = [
@@ -71,7 +70,6 @@ final class NullParameterHandlingTest extends TestCase
     {
         // Access the private method that converts parameters
         $convertMethod = $this->reflection->getMethod('convertArrayParamsToString');
-        $convertMethod->setAccessible(true);
 
         // Test parameters with empty string values (should be kept)
         $params = [
@@ -91,7 +89,6 @@ final class NullParameterHandlingTest extends TestCase
     {
         // Test the complete parameter building process
         $buildParamsMethod = $this->reflection->getMethod('buildParamsFromArguments');
-        $buildParamsMethod->setAccessible(true);
 
         // Simulate the exact call that was causing Error Code 6
         $arguments = [
@@ -113,7 +110,6 @@ final class NullParameterHandlingTest extends TestCase
 
         // But when converted, nulls should be omitted
         $convertMethod = $this->reflection->getMethod('convertArrayParamsToString');
-        $convertMethod->setAccessible(true);
         $convertedParams = $convertMethod->invoke($this->client, $builtParams);
 
         $this->assertArrayNotHasKey('track_number', $convertedParams);

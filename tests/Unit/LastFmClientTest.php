@@ -256,7 +256,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('buildParamsFromArguments');
-        $method->setAccessible(true);
 
         // Test artist.getInfo operation with positional arguments
         $result = $method->invoke($this->client, 'getArtistInfo', ['Doja Cat', null, 'en', 1, 'testuser']);
@@ -278,7 +277,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('buildParamsFromArguments');
-        $method->setAccessible(true);
 
         // Test with an associative array instead of positional
         $result = $method->invoke($this->client, 'getArtistInfo', [
@@ -302,7 +300,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('getAllowedCamelCaseParams');
-        $method->setAccessible(true);
 
         // Test getArtistInfo operation (not artist.getInfo)
         $result = $method->invoke($this->client, 'getArtistInfo');
@@ -321,7 +318,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('getAllowedCamelCaseParams');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->client, 'unknown.operation');
 
@@ -336,7 +332,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('convertSnakeToCamel');
-        $method->setAccessible(true);
 
         $this->assertEquals('testParam', $method->invoke($this->client, 'test_param'));
         $this->assertEquals('myLongParameterName', $method->invoke($this->client, 'my_long_parameter_name'));
@@ -351,7 +346,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('convertCamelToSnake');
-        $method->setAccessible(true);
 
         $this->assertEquals('test_param', $method->invoke($this->client, 'testParam'));
         $this->assertEquals('my_long_parameter_name', $method->invoke($this->client, 'myLongParameterName'));
@@ -368,7 +362,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('validateRequiredParameters');
-        $method->setAccessible(true);
 
         // Test with valid required parameters for artist.getInfo
         $this->assertNull($method->invoke(
@@ -386,7 +379,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('validateRequiredParameters');
-        $method->setAccessible(true);
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Required parameter artist is missing');
@@ -407,7 +399,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('validateRequiredParameters');
-        $method->setAccessible(true);
 
         // Test chart.getTopArtists which has no required parameters
         $this->assertNull($method->invoke(
@@ -431,7 +422,6 @@ final class LastFmClientTest extends UnitTestCase
 
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('callOperation');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->client, 'getArtistInfo', ['artist' => 'Ariana Grande']);
 
@@ -456,7 +446,6 @@ final class LastFmClientTest extends UnitTestCase
 
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('callOperation');
-        $method->setAccessible(true);
 
         // Test loveTrack which is a POST operation
         $result = $method->invoke($this->client, 'loveTrack', [
@@ -478,7 +467,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('convertArrayParamsToString');
-        $method->setAccessible(true);
 
         $params = [
             'artist' => 'SZA',
@@ -500,7 +488,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('convertArrayParamsToString');
-        $method->setAccessible(true);
 
         $params = [
             'artist' => 'Lorde',
@@ -522,7 +509,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('buildParamsFromArguments');
-        $method->setAccessible(true);
 
         $timestamp = 1672574400; // Unix timestamp for 2023-01-01 12:00:00
 
@@ -545,7 +531,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $validateMethod = $reflection->getMethod('validateRequiredParameters');
-        $validateMethod->setAccessible(true);
 
         // Test with an operation that requires multiple parameters
         $this->expectException(\InvalidArgumentException::class);
@@ -566,7 +551,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('callOperation');
-        $method->setAccessible(true);
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Unknown operation: unknown.method');
@@ -613,7 +597,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('validateParameters');
-        $method->setAccessible(true);
 
         // Test with valid parameters
         $validParams = ['artist' => 'Test Artist', 'track' => 'Test Track'];
@@ -633,7 +616,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('convertParameterToString');
-        $method->setAccessible(true);
 
         $dateTime = new \DateTime('2023-01-01 00:00:00');
         $result = $method->invoke($this->client, $dateTime);
@@ -649,7 +631,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('convertParameterToString');
-        $method->setAccessible(true);
 
         $invalidObject = new \stdClass();
 
@@ -668,7 +649,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('buildParamsFromArguments');
-        $method->setAccessible(true);
 
         // Test with empty arguments for an operation that has parameters
         $result = $method->invoke($this->client, 'getArtistInfo', []);
@@ -687,7 +667,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('validateRequiredParameters');
-        $method->setAccessible(true);
 
         // Test with an operation that has no required parameters
         $method->invoke($this->client, 'chart.getTopArtists', [], []);
@@ -713,7 +692,6 @@ final class LastFmClientTest extends UnitTestCase
 
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('callOperation');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->client, 'getArtistInfo', ['artist' => 'Test Artist']);
         $this->assertArrayHasKey('artist', $result);
@@ -726,7 +704,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('getAllowedCamelCaseParams');
-        $method->setAccessible(true);
 
         // Test with known operation - use getAlbumInfo (the operation key, not album.getInfo)
         $camelParams = $method->invoke($this->client, 'getAlbumInfo');
@@ -744,7 +721,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('getAllowedCamelCaseParams');
-        $method->setAccessible(true);
 
         // Test with a non-existent operation
         $result = $method->invoke($this->client, 'nonexistent.operation');
@@ -760,7 +736,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('getAllowedCamelCaseParams');
-        $method->setAccessible(true);
 
         // Test with an operation that has minimal parameters (auth.getToken has no params)
         $result = $method->invoke($this->client, 'auth.getToken');
@@ -777,7 +752,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('validateRequiredParameters');
-        $method->setAccessible(true);
 
         // Test 1: Operation with no parameters config - should return early
         $method->invoke($this->client, 'getAuthToken', [], []);
@@ -800,7 +774,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('validateRequiredParameters');
-        $method->setAccessible(true);
 
         // Test with null value for non-required parameter (should not throw)
         $method->invoke($this->client, 'getAlbumInfo', ['artist' => 'Test'], ['artist' => 'Test', 'album' => null]);
@@ -819,7 +792,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('callOperation');
-        $method->setAccessible(true);
 
         // Test 1: GET request without an API key
         $this->mockHandler->append(
@@ -849,7 +821,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('callOperation');
-        $method->setAccessible(true);
 
         // Test empty response body
         $this->mockHandler->append(new Response(200, [], ''));
@@ -866,7 +837,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('callOperation');
-        $method->setAccessible(true);
 
         // Test invalid JSON response
         $this->mockHandler->append(new Response(200, [], 'invalid json'));
@@ -883,7 +853,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('callOperation');
-        $method->setAccessible(true);
 
         // Test non-array JSON response
         $this->mockHandler->append(new Response(200, [], '"string response"'));
@@ -900,7 +869,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('callOperation');
-        $method->setAccessible(true);
 
         // Test API error response
         $this->mockHandler->append(
@@ -926,7 +894,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('convertArrayParamsToString');
-        $method->setAccessible(true);
 
         // Test 1: Empty array
         $result = $method->invoke($this->client, []);
@@ -958,7 +925,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('convertArrayParamsToString');
-        $method->setAccessible(true);
 
         $dateTime = new \DateTime('2021-01-01 12:00:00');
         $params = [
@@ -979,7 +945,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('validateParameters');
-        $method->setAccessible(true);
 
         // Test 1: Valid parameters - should pass
         $validParams = ['artist' => 'Test Artist', 'album' => 'Test Album'];
@@ -1004,7 +969,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('validateParameters');
-        $method->setAccessible(true);
 
         // Test invalid parameter name (starts with number)
         $invalidParams = ['123invalid' => 'test'];
@@ -1021,7 +985,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('validateParameters');
-        $method->setAccessible(true);
 
         // Test invalid parameter name with special characters
         $invalidParams = ['param-with-dash' => 'test'];
@@ -1038,7 +1001,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('validateParameters');
-        $method->setAccessible(true);
 
         // Create one parameter with a massive value to definitely exceed the URI length limit
         $longParams = ['param' => str_repeat('x', 2100)]; // Way over 2048 limit
@@ -1055,7 +1017,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('convertMethodToOperation');
-        $method->setAccessible(true);
 
         // Test direct mapping (Last.fm uses camelCase directly, no conversion needed)
         $this->assertEquals('getArtistInfo', $method->invoke($this->client, 'getArtistInfo'));
@@ -1076,7 +1037,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('generateSignature');
-        $method->setAccessible(true);
 
         // Test basic signature generation
         $params = [
@@ -1138,15 +1098,12 @@ final class LastFmClientTest extends UnitTestCase
         $reflection = new \ReflectionClass($this->client);
 
         $apiKeyProperty = $reflection->getProperty('apiKey');
-        $apiKeyProperty->setAccessible(true);
         $this->assertEquals('test_key', $apiKeyProperty->getValue($this->client));
 
         $apiSecretProperty = $reflection->getProperty('apiSecret');
-        $apiSecretProperty->setAccessible(true);
         $this->assertEquals('test_secret', $apiSecretProperty->getValue($this->client));
 
         $sessionKeyProperty = $reflection->getProperty('sessionKey');
-        $sessionKeyProperty->setAccessible(true);
         $this->assertEquals('test_session', $sessionKeyProperty->getValue($this->client));
 
         // Test setting only API key
@@ -1176,7 +1133,6 @@ final class LastFmClientTest extends UnitTestCase
     {
         $reflection = new \ReflectionClass($this->client);
         $method = $reflection->getMethod('buildParamsFromArguments');
-        $method->setAccessible(true);
 
         // Test with a method name that would result in an operation with no parameters
         // We'll mock this by temporarily modifying the config or using a non-existent operation
